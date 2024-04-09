@@ -34,7 +34,9 @@ urlpatterns = [
 
     path('junks/',foodviews.junks,name="junks"),
     path('foods/',foodviews.foods,name="foods"),
-    path('order/',foodviews.order,name="orders")
+    path('order/',foodviews.order,name="orders"),
+    path('addtocart/',foodviews.add_to_cart,name="add_to_cart"),
+    path('removefromcart/',foodviews.remove_from_cart,name="remove-from-cart")
 ]
 
 

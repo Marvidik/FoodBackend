@@ -39,3 +39,11 @@ class Orders(models.Model):
 
     def __str__(self) -> str:
         return self.user.username
+    
+
+class Cart(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    order=models.CharField(max_length=200)
+
+    def __str__(self) -> str:
+        return self.user.username
