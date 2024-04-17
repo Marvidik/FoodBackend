@@ -18,4 +18,9 @@ class PasswordResetToken(models.Model):
         expiration_time = 180
         return (int(time.time()) - self.timestamp) < expiration_time
 
-        
+
+
+class Profile(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    phone=models.IntegerField()
+    image=models.ImageField(upload_to="profile_pictures")

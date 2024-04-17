@@ -1,5 +1,15 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Junks,Foods,Orders,Cart
+from .models import Junks,Foods,Orders,Cart,Restaurant
+
+from rest_framework import serializers
+
+
+
+class RestaurantSerializer(ModelSerializer):
+
+    class Meta:
+        model=Restaurant
+        fields="__all__"
 
 
 class JunkSerializer(ModelSerializer):
@@ -34,7 +44,7 @@ class CartSerializer(ModelSerializer):
         fields="__all__"
 
 
-from rest_framework import serializers
+
 
 class CartDeleteSerializer(serializers.Serializer):
     cart_item_id = serializers.IntegerField()

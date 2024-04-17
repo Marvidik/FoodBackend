@@ -6,25 +6,32 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-from .models import Junks,Foods,Cart
-from .serializer import JunkSerializer,FoodsSerializer,OrderSerializer,CartSerializer,CartDeleteSerializer
+from .models import Junks,Foods,Cart,Restaurant
+from .serializer import JunkSerializer,FoodsSerializer,OrderSerializer,CartSerializer,CartDeleteSerializer,RestaurantSerializer
 # Create your views here.
 
 
-
 @api_view(['GET'])
-def junks(request):
-    data=Junks.objects.all()
+def restaurants(request):
+    data=Restaurant.objects.all()
 
-    serializer=JunkSerializer(instance=data, many=True)
+    serializer=RestaurantSerializer(instance=data,many=True)
 
-    return Response({'junks': serializer.data}, status=status.HTTP_200_OK)
+    return Response({'restaurants': serializer.data}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def foods(request):
     data=Foods.objects.all()
 
     serializer=FoodsSerializer(instance=data, many=True)
+
+    return Response({'junks': serializer.data}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def junks(request):
+    data=Junks.objects.all()
+
+    serializer=JunkSerializer(instance=data, many=True)
 
     return Response({'junks': serializer.data}, status=status.HTTP_200_OK)
 
