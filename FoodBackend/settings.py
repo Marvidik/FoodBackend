@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-deittsd0%q6d#-5rmme-d2aw4^@nx6&xee05z=3%5*p1m68))_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*",".vercel.app"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -134,3 +134,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+#EMAIL_USE_TLS = True
+EMAIL_USE_SSL=True
+EMAIL_HOST_USER = 'ebubeidika@gmail.com'
+EMAIL_HOST_PASSWORD = ""  # You need to replace 'your_gmail_password' with your actual Gmail account password
+DEFAULT_FROM_EMAIL = 'ebubeidika@gmail.com'
+nothing="vmcy dbwq wihb fhxy"

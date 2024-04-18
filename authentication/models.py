@@ -24,3 +24,8 @@ class Profile(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     phone=models.IntegerField()
     image=models.ImageField(upload_to="profile_pictures")
+
+
+class OTP(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    otp=models.CharField(max_length=5)

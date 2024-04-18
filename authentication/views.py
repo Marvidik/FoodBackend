@@ -5,12 +5,12 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import PasswordResetToken
-from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer
+from .models import PasswordResetToken,OTP
+from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer,OTPSerializer,ConfirmOTPSerializer
 
 from django.core.mail import send_mail
 from django.utils import timezone
-from .utils import generate_reset_token
+from .utils import generate_reset_token,generate_otp
 
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import get_user_model, views as auth_views
@@ -24,6 +24,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes, force_str
 import time
 
+from django.conf import settings
+from django.http import JsonResponse
 
 
 # The login API 
@@ -39,7 +41,47 @@ def login(request):
     token,created=Token.objects.get_or_create(user=user)
     serializer=UserSerializer(instance=user)
     #Returning the users data and the users token.
+
+    # Generate OTP
+    otp = generate_otp()
+
+    subject = 'Your OTP REQUEST'
+    message = f'Your OTP is: {otp}'
+    from_email = 'your_email@example.com'  # Update with your email
+    recipient_list = [user.email]
+
+    # Send OTP via Email
+    send_mail(subject, message, from_email, recipient_list)
+
+    otp=OTP.objects.create(user=user,otp=otp)
+    otp.save()
+    
     return Response({"token":token.key,"user":serializer.data})
+
+@api_view(['POST'])
+def confirm_otp(request):
+    serializer=ConfirmOTPSerializer(data=request.data)
+
+    if serializer.is_valid():
+        otp = serializer.validated_data['otp']
+        user=serializer.validated_data['user']
+
+        # Retrieve the OTP object for the user
+        try:
+            otp_object = OTP.objects.get(user=user)
+        except OTP.DoesNotExist:
+            return Response({'error': 'OTP not found for the user'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Check if the provided OTP matches the saved OTP
+        if otp == otp_object.otp:
+            otp_object.delete()
+            return Response({'message': 'OTP verified successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Incorrect OTP'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
   
 
 #The registration API
@@ -101,6 +143,33 @@ def password_reset(request):
 
 
 
+
+@api_view(['POST'])
+def send_otp_api(request):
+    if request.method == 'POST':
+        # Assuming you have a serializer for your request data
+        serializer = ResetPasswordEmailSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data.get('email')
+            
+            # Generate OTP
+            otp = generate_otp()
+
+            subject = 'Password Reset Request'
+            message = f'Your OTP is: {otp}'
+            from_email = 'your_email@example.com'  # Update with your email
+            recipient_list = [email]
+
+            # Send OTP via Email
+            send_mail(subject, message, from_email, recipient_list)
+
+            return Response({'message': 'OTP sent successfully'})
+        else:
+            return Response(serializer.errors, status=400)
+    else:
+        return Response({'error': 'Invalid request method'}, status=400)
+    
+    
 
 #The password reset confirm API
 # the view called when the user follows the sent link 
