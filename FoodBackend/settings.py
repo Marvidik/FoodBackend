@@ -145,4 +145,4 @@ EMAIL_USE_SSL=True
 EMAIL_HOST_USER = 'ebubeidika@gmail.com'
 EMAIL_HOST_PASSWORD = ""  # You need to replace 'your_gmail_password' with your actual Gmail account password
 DEFAULT_FROM_EMAIL = 'ebubeidika@gmail.com'
-nothing="vmcy dbwq wihb fhxy"
+food_coupon_code="vmcy dbwq wihb fhxy"

@@ -35,6 +35,7 @@ class ConfirmOTPSerializer(serializers.Serializer):
 
 #Serializer for the password reset confirm
 class PasswordResetConfirmSerializer(serializers.Serializer):
+    email=serializers.EmailField(min_length=2)
     password = serializers.CharField(max_length=128)
     confirm_password = serializers.CharField(max_length=128)
 

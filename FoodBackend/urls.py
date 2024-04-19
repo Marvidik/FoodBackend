@@ -29,8 +29,7 @@ urlpatterns = [
     path('login/',views.login, name="login"),
     path('signup/',views.register,name="register"),
     path('password/reset/', views.password_reset, name='password_reset'),
-    path('password/reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
-    path('sendotp/',views.send_otp_api,name="send_api"),
+    path('password/reset/confirm', views.password_reset_confirm, name='password_reset_confirm'),
     path("otp/",views.confirm_otp,name="confirm_otp"),
 
 

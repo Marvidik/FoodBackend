@@ -42,6 +42,8 @@ def login(request):
     serializer=UserSerializer(instance=user)
     #Returning the users data and the users token.
 
+    
+
     # Generate OTP
     otp = generate_otp()
 
@@ -53,8 +55,9 @@ def login(request):
     # Send OTP via Email
     send_mail(subject, message, from_email, recipient_list)
 
-    otp=OTP.objects.create(user=user,otp=otp)
-    otp.save()
+    
+    otp_object, otp = OTP.objects.update_or_create(user=user, defaults={'otp': otp})
+
     
     return Response({"token":token.key,"user":serializer.data})
 
@@ -101,99 +104,57 @@ def register(request):
 
 
 #Password reset API 
-#This sends the password reset link to the user.
+#This sends the password reset token to the user.
 @api_view(['POST'])
 def password_reset(request):
     serializer = ResetPasswordEmailSerializer(data=request.data)
 
     #Checking if the data is valid 
     if serializer.is_valid():
-        email = serializer.validated_data['email']
+        email = serializer.validated_data['email'] 
 
-        # Generate reset token and timestamp
-        token, timestamp = generate_reset_token()
+        user=User.objects.get(email=email)
 
+         # Generate OTP
+        otp = generate_otp()
 
-        # Get UID for the user
-        UserModel = get_user_model()
-        user = UserModel.objects.get(email=email)
-        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        subject = 'Your OTP REQUEST'
+        message = f'Your OTP is: {otp}'
+        from_email = 'your_email@example.com'  # Update with your email
+        recipient_list = [user.email]
 
-        #converting the timestamp into an integer 
-        formatted_timestamp = int(timestamp.timestamp())
-
-        # Store token and timestamp in the database
-        PasswordResetToken.objects.create(user=user, token=token, timestamp=formatted_timestamp)
-        # Construct password reset URL with UID and token
-        reset_url = reverse('password_reset_confirm', kwargs={'uidb64': uidb64, 'token': token})
-        reset_link = request.build_absolute_uri(reset_url)
-
-        # Send password reset email
-        subject = 'Password Reset Request'
-        message = f'Click the link below to reset your password:\n\n{reset_link}'
-        from_email = 'ebubeidika@gmail.com' 
-        recipient_list = [email]
-
+        # Send OTP via Email
         send_mail(subject, message, from_email, recipient_list)
 
+        otp_object, otp = OTP.objects.update_or_create(user=user, defaults={'otp': otp})
+
     
-        return Response({'message': 'Password reset email sent'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Password reset email sent '}, status=status.HTTP_200_OK)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-
-@api_view(['POST'])
-def send_otp_api(request):
-    if request.method == 'POST':
-        # Assuming you have a serializer for your request data
-        serializer = ResetPasswordEmailSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data.get('email')
-            
-            # Generate OTP
-            otp = generate_otp()
-
-            subject = 'Password Reset Request'
-            message = f'Your OTP is: {otp}'
-            from_email = 'your_email@example.com'  # Update with your email
-            recipient_list = [email]
-
-            # Send OTP via Email
-            send_mail(subject, message, from_email, recipient_list)
-
-            return Response({'message': 'OTP sent successfully'})
-        else:
-            return Response(serializer.errors, status=400)
-    else:
-        return Response({'error': 'Invalid request method'}, status=400)
-    
     
 
 #The password reset confirm API
 # the view called when the user follows the sent link 
 @api_view(['POST'])
-def password_reset_confirm(request, uidb64, token):
+def password_reset_confirm(request):
     
     serializer = PasswordResetConfirmSerializer(data=request.data)
 
     #Checking if the data is valid 
     if serializer.is_valid():
         try:
+            email=serializer.validated_data['email']
             #Decoding and getting the user changing the password 
-            user = User.objects.get(pk=force_str(urlsafe_base64_decode(uidb64)))
+            user = User.objects.get(email=email)
 
-            # Check token validity
-            password_reset = PasswordResetToken.objects.filter(user=user, token=token).first()
-
-            #If the token is valid the password is set and saved 
-            if password_reset and password_reset.is_valid():
+            if user:
                 user.set_password(serializer.validated_data['password'])
                 user.save()
                 return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
             else:
-                return Response({'message': 'Invalid or expired token'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'Error Occured'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
