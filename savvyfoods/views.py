@@ -19,21 +19,23 @@ def restaurants(request):
 
     return Response({'restaurants': serializer.data}, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def foods(request):
-    data=Foods.objects.all()
+@api_view(["GET"])
+def restaurant_food(request,id):
 
+    data=Foods.objects.filter(restaurant=id)
     serializer=FoodsSerializer(instance=data, many=True)
 
-    return Response({'junks': serializer.data}, status=status.HTTP_200_OK)
+    return Response({'Foods': serializer.data}, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def junks(request):
-    data=Junks.objects.all()
 
+@api_view(["GET"])
+def restaurant_junk(request,id):
+
+    data=Junks.objects.filter(restaurant=id)
     serializer=JunkSerializer(instance=data, many=True)
 
-    return Response({'junks': serializer.data}, status=status.HTTP_200_OK)
+    return Response({'Junks': serializer.data}, status=status.HTTP_200_OK)
+
 
 
 @api_view(['POST'])

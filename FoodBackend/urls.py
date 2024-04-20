@@ -32,9 +32,9 @@ urlpatterns = [
     path('password/reset/confirm', views.password_reset_confirm, name='password_reset_confirm'),
     path("otp/",views.confirm_otp,name="confirm_otp"),
 
-
-    path('junks/',foodviews.junks,name="junks"),
-    path('foods/',foodviews.foods,name="foods"),
+    path('restaurants/',foodviews.restaurants,name="restaurant"),
+    path('restaurant/food/<id>',foodviews.restaurant_food,name="restaurant-food"),
+    path('restaurant/junk/<id>',foodviews.restaurant_junk,name="restaurant-junk"),
     path('order/',foodviews.order,name="orders"),
     path('addtocart/',foodviews.add_to_cart,name="add_to_cart"),
     path('removefromcart/',foodviews.remove_from_cart,name="remove-from-cart")
