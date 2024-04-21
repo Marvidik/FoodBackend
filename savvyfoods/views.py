@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-from .models import Junks,Foods,Cart,Restaurant
-from .serializer import JunkSerializer,FoodsSerializer,OrderSerializer,CartSerializer,CartDeleteSerializer,RestaurantSerializer
+from .models import Junks,Foods,Cart,Restaurant,CartItem
+from .serializer import JunkSerializer,FoodsSerializer,CartSerializer,CartDeleteSerializer,RestaurantSerializer,CartItemSerializer
 # Create your views here.
 
 
@@ -37,57 +37,57 @@ def restaurant_junk(request,id):
     return Response({'Junks': serializer.data}, status=status.HTTP_200_OK)
 
 
-
-@api_view(['POST'])
-def order(request):
-    data=request.data 
-
-    serializer=OrderSerializer(data=data)
-
-    if serializer.is_valid():
-        serializer.save()
-
-        return Response({'Message': "Orders Sent Successfully"}, status=status.HTTP_200_OK)
-    return Response({'Message': "Orders Sent Successfully"}, status=status.HTTP_400_BAD_REQUEST)
-
-
 @api_view(['POST'])
 def add_to_cart(request):
-    if request.method == 'POST':
-        # Create a new cart item using the data from the request
-        serializer = CartSerializer(data=request.data)
-        if serializer.is_valid():
-            # Save the validated data to the database
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        # If the data is not valid, return the errors
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    # Return an error response if the request method is not POST
-    return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    user = User.objects.get(id=2)
 
+    data = request.data
+    cart_items = data.get('cart_items', [])
+
+    try:
+        cart = Cart.objects.get(user=user)
+    except Cart.DoesNotExist:
+        cart = Cart.objects.create(user=user)
+
+    for item_data in cart_items:
+        serializer = CartItemSerializer(data=item_data)
+        if serializer.is_valid():
+            serializer.save(cart=cart)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({"message": "Items added to cart successfully"}, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 def remove_from_cart(request):
-    if request.method == 'POST':
-        # Serialize the request data
-        serializer = CartDeleteSerializer(data=request.data)
-        if serializer.is_valid():
-            # Get the ID of the cart item to be removed
-            cart_item_id = serializer.validated_data.get('cart_item_id')
+    user = request.user
+    if not user.is_authenticated:
+        return Response({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            # Check if the cart item exists
-            try:
-                cart_item = Cart.objects.get(id=cart_item_id)
-            except Cart.DoesNotExist:
-                return Response({'error': 'Cart item does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    data = request.data
+    item_ids = data.get('item_ids', [])
 
-            # Delete the cart item from the database
-            cart_item.delete()
+    try:
+        cart = Cart.objects.get(user=user)
+    except Cart.DoesNotExist:
+        return Response({"error": "Cart not found for the user"}, status=status.HTTP_404_NOT_FOUND)
 
-            return Response({'message': 'Cart item removed successfully'}, status=status.HTTP_200_OK)
-        else:
-            # Return errors if serializer validation fails
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Return an error response if the request method is not POST
-    return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    cart_items = CartItem.objects.filter(id__in=item_ids)
+    cart_items.delete()
+
+    return Response({"message": "Items removed from cart successfully"}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def view_cart(request):
+    user = request.user
+    if not user.is_authenticated:
+        return Response({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        cart = Cart.objects.get(user=user)
+    except Cart.DoesNotExist:
+        return Response({"error": "Cart not found for the user"}, status=status.HTTP_404_NOT_FOUND)
+
+    cart_items = cart.items.all()
+    serializer = CartItemSerializer(cart_items, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
