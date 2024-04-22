@@ -1,10 +1,7 @@
 from django.contrib import admin
-from .models import Junks,Foods,Cart,Restaurant,CartItem
-# Register your models here.
+from .models import Junks,Foods,Restaurant
 
 
 admin.site.register(Junks)
 admin.site.register(Foods)
-admin.site.register(Cart)
 admin.site.register(Restaurant)
-admin.site.register(CartItem)
