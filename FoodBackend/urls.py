@@ -35,7 +35,11 @@ urlpatterns = [
     path('restaurants/',foodviews.restaurants,name="restaurant"),
     path('restaurant/food/<id>',foodviews.restaurant_food,name="restaurant-food"),
     path('restaurant/junk/<id>',foodviews.restaurant_junk,name="restaurant-junk"),
-   
+
+
+    path('cart/<id>',foodviews.view_cart,name="view-cart"),
+    path('addcart/',foodviews.add_to_cart,name="add-to-cart"),
+    path('removecart/<id>',foodviews.remove_from_cart,name="remove-from-cart")
 ]
 
 

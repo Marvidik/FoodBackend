@@ -24,9 +24,7 @@ class Restaurant(models.Model):
 class Junks(models.Model):
     restaurant=models.ForeignKey(Restaurant,on_delete=models.CASCADE,default=None)
     name=models.CharField(max_length=100) 
-    junk=models.CharField(max_length=100)
     image=models.ImageField(upload_to="junks")
-    price=models.IntegerField()
     rating=models.IntegerField()
     deliveryfee=models.IntegerField()
     category=models.CharField(max_length=20)
@@ -45,7 +43,6 @@ class Foods(models.Model):
     restaurant=models.ForeignKey(Restaurant,on_delete=models.CASCADE,default=None)
     name=models.CharField(max_length=100)
     image=models.ImageField(upload_to="foods")
-    contents=models.CharField(max_length=100)
     rating=models.IntegerField()
     deliveryfee=models.IntegerField()
     category=models.CharField(max_length=20)
@@ -57,4 +54,12 @@ class Foods(models.Model):
         return self.name
 
 
-
+class Cart(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    name=models.CharField(max_length=100)
+    image=models.ImageField(upload_to="foods",null=True)
+    rating=models.IntegerField()
+    deliveryfee=models.IntegerField()
+    category=models.CharField(max_length=20)
+    price=models.IntegerField()
+    quantity=models.IntegerField(default=1)
