@@ -39,7 +39,12 @@ urlpatterns = [
 
     path('cart/<id>',foodviews.view_cart,name="view-cart"),
     path('addcart/',foodviews.add_to_cart,name="add-to-cart"),
-    path('removecart/<id>',foodviews.remove_from_cart,name="remove-from-cart")
+    path('removecart/<id>',foodviews.remove_from_cart,name="remove-from-cart"),
+
+
+    path('delivered/<pk>',foodviews.received,name="received"),
+    path("addorder/",foodviews.add_to_order,name="add-order"),
+    path("vieworder/<id>",foodviews.view_orders,name="view-orders")
 ]
 
 

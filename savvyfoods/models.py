@@ -63,3 +63,15 @@ class Cart(models.Model):
     category=models.CharField(max_length=20)
     price=models.IntegerField()
     quantity=models.IntegerField(default=1)
+
+
+class Order(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    name=models.CharField(max_length=100)
+    image=models.ImageField(upload_to="foods",null=True)
+    rating=models.IntegerField()
+    deliveryfee=models.IntegerField()
+    category=models.CharField(max_length=20)
+    price=models.IntegerField()
+    quantity=models.IntegerField(default=1)
+    delivered=models.BooleanField(default=False)
