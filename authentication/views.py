@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import PasswordResetToken,OTP
+from .models import PasswordResetToken,OTP,Referal
 from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer,OTPSerializer,ConfirmOTPSerializer
 
 from django.core.mail import send_mail
@@ -99,6 +99,7 @@ def register(request):
         user.set_password(request.data['password'])
         user.save()
         token=Token.objects.create(user=user)
+
         return Response({"token":token.key,"user":serializer.data})
     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 

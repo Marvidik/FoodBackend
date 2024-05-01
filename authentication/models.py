@@ -29,3 +29,13 @@ class Profile(models.Model):
 class OTP(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     otp=models.CharField(max_length=5)
+
+
+class Referal(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    point=models.IntegerField(default=0)
+
+
+    def __str__(self):
+
+        return self.user.username

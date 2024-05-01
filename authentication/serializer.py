@@ -1,13 +1,32 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import OTP
+from .models import OTP,Referal
 
 
 #  user serializer
 class UserSerializer(serializers.ModelSerializer):
+    referral_name = serializers.CharField(required=False, allow_blank=True)
     class Meta(object):
         model = User
-        fields = ( 'id','username', 'email', 'password')
+        fields = ( 'id','username', 'email', 'password', 'referral_name')
+
+
+    def create(self, validated_data):
+        referral_name = validated_data.pop('referral_name', None)
+        user = User.objects.create(**validated_data)
+        
+        # Update referral points if referral name is provided
+        if referral_name:
+            try:
+                refer = User.objects.get(username=referral_name)
+                if refer:
+                    point, created = Referal.objects.get_or_create(user=refer)
+                    point.point += 1
+                    point.save()
+            except User.DoesNotExist:
+                pass
+
+        return user
 
 
 class OTPSerializer(serializers.ModelSerializer):

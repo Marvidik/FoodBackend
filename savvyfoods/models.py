@@ -4,9 +4,6 @@ from datetime import datetime
 
 # Create your models here.
 
-class Referal(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
-    point=models.IntegerField()
 
 
 class Restaurant(models.Model):
