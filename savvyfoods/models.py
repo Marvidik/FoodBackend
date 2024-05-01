@@ -72,3 +72,7 @@ class Order(models.Model):
     price=models.IntegerField()
     quantity=models.IntegerField(default=1)
     delivered=models.BooleanField(default=False)
+
+
+class Advert(models.Model):
+    image=models.ImageField(upload_to="adverts",null=True)
