@@ -40,3 +40,5 @@ The above two lines of codes should run for any  change made in the models.py
 ```
 python manage.py runserver
 ```
+
+copy the local host url and paste on your browser
