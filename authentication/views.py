@@ -67,11 +67,14 @@ def confirm_otp(request):
 
     if serializer.is_valid():
         otp = serializer.validated_data['otp']
-        user=serializer.validated_data['user']
+        email=serializer.validated_data['email']
+
+        user=User.objects.get(email=email)
+        
 
         # Retrieve the OTP object for the user
         try:
-            otp_object = OTP.objects.get(user=user)
+            otp_object = OTP.objects.get(user=user.id)
         except OTP.DoesNotExist:
             return Response({'error': 'OTP not found for the user'}, status=status.HTTP_404_NOT_FOUND)
 

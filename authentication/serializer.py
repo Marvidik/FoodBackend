@@ -44,7 +44,7 @@ class ResetPasswordEmailSerializer(serializers.Serializer):
 
 #Serializer for the reset password email
 class ConfirmOTPSerializer(serializers.Serializer):
-    user=serializers.IntegerField()
+    email=serializers.EmailField(min_length=2)
     otp=serializers.CharField()
 
     class Meta:
