@@ -44,7 +44,13 @@ urlpatterns = [
 
     path('delivered/<pk>',foodviews.received,name="received"),
     path("addorder/",foodviews.add_to_order,name="add-order"),
-    path("vieworder/<id>",foodviews.view_orders,name="view-orders")
+    path("vieworder/<id>",foodviews.view_orders,name="view-orders"),
+
+
+    path('ads/',foodviews.advert,name="advert"),
+
+    path("profile/<id>",views.profile_get,name="profile"),
+    path("profile/add/",views.profile_add,name="add-profile")
 ]
 
 

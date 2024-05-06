@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-from .models import Junks,Foods,Restaurant,Cart,Order
-from .serializer import JunkSerializer,FoodsSerializer,RestaurantSerializer,CartSerializer,OrderSerializer
+from .models import Junks,Foods,Restaurant,Cart,Order,Advert
+from .serializer import JunkSerializer,FoodsSerializer,RestaurantSerializer,CartSerializer,OrderSerializer,AdvertSerializer
 # Create your views here.
 
 
@@ -100,3 +100,14 @@ def received(request, pk):
             serializer.save()  # Commit changes to the database
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+
+@api_view(['GET'])
+def advert(request):
+    data=Advert.objects.all()
+
+    serializer=AdvertSerializer(instance=data,many=True)
+
+    return Response({'ads': serializer.data}, status=status.HTTP_200_OK)

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import OTP,Referal
+from .models import OTP,Referal,Profile
 
 
 #  user serializer
@@ -69,3 +69,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         return data
     
 
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['id', 'user', 'address']

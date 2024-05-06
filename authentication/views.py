@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import PasswordResetToken,OTP,Referal
-from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer,OTPSerializer,ConfirmOTPSerializer
+from .models import PasswordResetToken,OTP,Referal,Profile
+from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer,OTPSerializer,ConfirmOTPSerializer,ProfileSerializer
 
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -163,4 +163,24 @@ def password_reset_confirm(request):
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
+@api_view(['GET'])
+def profile_get(request,id):
+
+    data=Profile.objects.filter(user=id)
+
+    serializer=ProfileSerializer(instance=data,many=True)
+
+    return Response({'profile': serializer.data}, status=status.HTTP_200_OK)
+
+
+
+@api_view(['POST'])
+def profile_add(request):
+    if request.method == 'POST':
+        serializer = ProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
