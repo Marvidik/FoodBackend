@@ -69,12 +69,44 @@ def remove_from_cart(request, id):
     
 
 @api_view(['GET'])
-def view_orders(request,id):
+def view_orders(request, id):
+    orders = Order.objects.filter(user=id)
+    order_data = []
+    
+    for order in orders:
+        order_details = OrderSerializer(order).data
+        food_details = None
+        junk_details = None
+        
+        # Fetch food details if available
+        if order.real_food:
+            food_details = {
+                'name': order.real_food.name,
+                'image': order.real_food.image.url,
+                'rating': order.real_food.rating,
+                'deliveryfee': order.real_food.deliveryfee,
+                'category': order.real_food.category,
+                'availability': order.real_food.availability,
+                'price': order.real_food.price
+            }
+        
+        # Fetch junk details if available
+        if order.real_junk:
+            junk_details = {
+                'name': order.real_junk.name,
+                'image': order.real_junk.image.url,
+                'rating': order.real_junk.rating,
+                'deliveryfee': order.real_junk.deliveryfee,
+                'category': order.real_junk.category,
+                'availability': order.real_junk.availability,
+                'price': order.real_junk.price
+            }
+        
+        order_details['food_details'] = food_details
+        order_details['junk_details'] = junk_details
+        order_data.append(order_details)
 
-    data=Order.objects.filter(user=id)
-    serializer=OrderSerializer(instance=data, many=True)
-
-    return Response({'Orders': serializer.data}, status=status.HTTP_200_OK)
+    return Response({'Orders': order_data}, status=status.HTTP_200_OK)
 
 @api_view(["POST"])
 def add_to_order(request):
@@ -85,7 +117,7 @@ def add_to_order(request):
         serializer.save()
         return Response({'Orders':"Orders Successfuly Added"}, status=status.HTTP_200_OK)
     else:
-        return Response({'Cart':"error"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'Order':"error"}, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(["PATCH"])
 def received(request, pk):

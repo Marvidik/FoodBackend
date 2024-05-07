@@ -26,6 +26,11 @@ class Profile(models.Model):
     phone=models.IntegerField(null=True)
 
 
+    def __str__(self):
+
+        return self.user.username
+
+
 class OTP(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     otp=models.CharField(max_length=5)
