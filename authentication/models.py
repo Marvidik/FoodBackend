@@ -23,6 +23,7 @@ class PasswordResetToken(models.Model):
 class Profile(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     address=models.CharField(max_length=100,null=True)
+    phone=models.IntegerField(null=True)
 
 
 class OTP(models.Model):

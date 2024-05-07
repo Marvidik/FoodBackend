@@ -50,7 +50,8 @@ urlpatterns = [
     path('ads/',foodviews.advert,name="advert"),
 
     path("profile/<id>",views.profile_get,name="profile"),
-    path("profile/add/",views.profile_add,name="add-profile")
+    path("profile/add/",views.profile_add,name="add-profile"),
+    path('profiles/<int:profile_id>/', views.profile_delete, name='profile_delete'),
 ]
 
 

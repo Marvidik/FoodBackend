@@ -72,4 +72,4 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'address']
+        fields = ['id', 'user', 'address','phone']
