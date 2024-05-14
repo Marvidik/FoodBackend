@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import PasswordResetToken,OTP,Referal,Profile
-from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer,OTPSerializer,ConfirmOTPSerializer,ProfileSerializer
+from .serializer import UserSerializer,ResetPasswordEmailSerializer,PasswordResetConfirmSerializer,OTPSerializer,ConfirmOTPSerializer,ProfileSerializer,ReferalSerializer
 
 from django.core.mail import send_mail
 from django.utils import timezone
@@ -196,3 +196,29 @@ def profile_delete(request, profile_id):
     if request.method == 'DELETE':
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+@api_view(['GET'])
+def referal_get(request,id):
+
+    data=Referal.objects.filter(user=id)
+
+    serializer=ReferalSerializer(instance=data,many=True)
+
+    return Response({'referals': serializer.data}, status=status.HTTP_200_OK)
+
+
+@api_view(["PATCH"])
+def remove_referral_point(request, user_id):
+    try:
+        referral = Referal.objects.get(user_id=user_id)
+    except Referal.DoesNotExist:
+        return Response({"message": "Referral record not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == "PATCH":
+        if referral.points > 0:
+            referral.points -= 1
+            referral.save()
+            serializer = ReferalSerializer(referral)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "Referral point is already zero."}, status=status.HTTP_400_BAD_REQUEST)

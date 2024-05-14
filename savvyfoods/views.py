@@ -143,3 +143,33 @@ def advert(request):
     serializer=AdvertSerializer(instance=data,many=True)
 
     return Response({'ads': serializer.data}, status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET'])
+def search(request, query):
+    restaurants = Restaurant.objects.filter(name__icontains=query)
+    foods = Foods.objects.filter(name__icontains=query)
+
+    restaurant_results = []
+    food_results = []
+
+    for restaurant in restaurants:
+        foods_of_restaurant = Foods.objects.filter(restaurant=restaurant)
+        serializer = FoodsSerializer(foods_of_restaurant, many=True)
+        restaurant_data = {
+            "restaurant": restaurant.name,
+            "foods": serializer.data
+        }
+        restaurant_results.append(restaurant_data)
+
+    for food in foods:
+        serializer = FoodsSerializer(food)
+        food_results.append(serializer.data)
+
+    results = {
+        "restaurants": restaurant_results,
+        "foods": food_results
+    }
+
+    return Response(results)

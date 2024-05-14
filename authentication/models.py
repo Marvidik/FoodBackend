@@ -24,6 +24,7 @@ class Profile(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     address=models.CharField(max_length=100,null=True)
     phone=models.IntegerField(null=True)
+    phone1=models.IntegerField(null=True)
 
 
     def __str__(self):

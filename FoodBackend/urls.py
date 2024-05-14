@@ -31,6 +31,8 @@ urlpatterns = [
     path('password/reset/', views.password_reset, name='password_reset'),
     path('password/reset/confirm', views.password_reset_confirm, name='password_reset_confirm'),
     path("otp/",views.confirm_otp,name="confirm_otp"),
+    path('referal/<id>',views.referal_get,name="referal"),
+    path('reducereferal/<id>',views.remove_referral_point,name="referalreduce"),
 
     path('restaurants/',foodviews.restaurants,name="restaurant"),
     path('restaurant/food/<id>',foodviews.restaurant_food,name="restaurant-food"),
@@ -50,8 +52,9 @@ urlpatterns = [
     path('ads/',foodviews.advert,name="advert"),
 
     path("profile/<id>",views.profile_get,name="profile"),
-    path("profile/add/",views.profile_add,name="add-profile"),
+    path("profile/user/add/",views.profile_add,name="add-profile"),
     path('profiles/<int:profile_id>/', views.profile_delete, name='profile_delete'),
+    path('search/<str:query>/', foodviews.search, name='search'),
 ]
 
 

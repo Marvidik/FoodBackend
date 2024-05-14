@@ -72,4 +72,11 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ['id', 'user', 'address','phone']
+        fields = ['id', 'user', 'address','phone','phone1']
+
+
+
+class ReferalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Referal
+        fields = "__all__"
