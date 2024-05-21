@@ -55,6 +55,7 @@ urlpatterns = [
     path("profile/user/add/",views.profile_add,name="add-profile"),
     path('profiles/<int:profile_id>/', views.profile_delete, name='profile_delete'),
     path('search/<str:query>/', foodviews.search, name='search'),
+    path('foodsearch/<id>/<str:query>/', foodviews.search_food, name='search2'),
 ]
 
 

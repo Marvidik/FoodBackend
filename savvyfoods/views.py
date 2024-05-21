@@ -173,3 +173,23 @@ def search(request, query):
     }
 
     return Response(results)
+
+
+@api_view(['GET'])
+def search_food(request, query,id):
+    restaurants = Restaurant.objects.get(id=id)
+    foods = Foods.objects.filter(name__icontains=query,restaurant=restaurants)
+
+    
+    food_results = []
+
+    for food in foods:
+        serializer = FoodsSerializer(food)
+        food_results.append(serializer.data)
+
+    results = {
+       
+        "foods": food_results
+    }
+
+    return Response(results)
