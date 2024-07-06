@@ -80,3 +80,10 @@ class Order(models.Model):
 
 class Advert(models.Model):
     image=models.ImageField(upload_to="adverts",null=True)
+
+class Notification(models.Model):
+    title=models.CharField(max_length=100)
+    message=models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.title  # Return title as string representation

@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-from .models import Junks,Foods,Restaurant,Cart,Order,Advert
-from .serializer import JunkSerializer,FoodsSerializer,RestaurantSerializer,CartSerializer,OrderSerializer,AdvertSerializer
+from .models import Junks,Foods,Restaurant,Cart,Order,Advert,Notification
+from .serializer import JunkSerializer,FoodsSerializer,RestaurantSerializer,CartSerializer,OrderSerializer,AdvertSerializer,NotSerializer
 # Create your views here.
 
 
@@ -70,7 +70,7 @@ def remove_from_cart(request, id):
 
 @api_view(['GET'])
 def view_orders(request, id):
-    orders = Order.objects.filter(user=id)
+    orders = Order.objects.filter(user=id,delivered=False)
     order_data = []
     
     for order in orders:
@@ -193,3 +193,36 @@ def search_food(request, query,id):
     }
 
     return Response(results)
+
+
+@api_view(['GET'])
+def last_notification(request):
+    try:
+        last_notification = Notification.objects.latest('id')  # Get the latest notification by id
+        serializer = NotSerializer(last_notification)
+        return Response(serializer.data)
+    except Notification.DoesNotExist:
+        return Response({"error": "No notifications found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+@api_view(['GET'])
+def undelivered_orders(request):
+    undelivered_orders = Order.objects.filter(delivered=False)
+    users_with_undelivered_orders = set(order.user for order in undelivered_orders)
+
+    response_data = []
+    for user in users_with_undelivered_orders:
+        orders = undelivered_orders.filter(user=user)
+        if orders.exists():
+            profile = orders.first().profile
+            data = {
+                'id':user.id,
+                'username': user.username,
+                'no_of_foods': orders.count(),
+                'address': profile.address if profile else None,
+                'phone': profile.phone1 if profile else None,
+            }
+            response_data.append(data)
+
+    return Response({'users': response_data}, status=status.HTTP_200_OK)
